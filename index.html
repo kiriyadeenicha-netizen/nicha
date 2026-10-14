@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACADEMIC PORTFOLIO // ณิชา กิริยาดี (เมย์)</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cyberPurple: '#a855f7',
+                        cyberPink: '#ec4899',
+                        cyberCyan: '#06b6d4',
+                        cyberYellow: '#facc15',
+                        cyberGreen: '#10b981',
+                        cyberDark: '#0d081a',
+                        cyberDarker: '#06030c'
+                    },
+                    fontFamily: {
+                        chakra: ['Chakra Petch', 'sans-serif'],
+                        mali: ['Mali', 'cursive', 'sans-serif'],
+                        kanit: ['Kanit', 'sans-serif']
+                    },
+                    boxShadow: {
+                        neonPink: '0 0 20px rgba(236, 72, 153, 0.6), 0 0 40px rgba(236, 72, 153, 0.2)',
+                        neonPurple: '0 0 20px rgba(168, 85, 247, 0.6), 0 0 40px rgba(168, 85, 247, 0.2)',
+                        neonCyan: '0 0 20px rgba(6, 182, 212, 0.6), 0 0 40px rgba(6, 182, 212, 0.2)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Kanit:wght@300;400;500;600;700&family=Mali:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom Hi-Tech Animations & Styling -->
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: #0d081a;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        .tech-font {
+            font-family: 'Chakra Petch', sans-serif;
+        }
+
+        .mali-font {
+            font-family: 'Mali', cursive;
+        }
+
+        /* Glassmorphism Hi-Tech Card */
+        .cyber-card {
+            background: rgba(20, 14, 38, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            position: relative;
+        }
+
+        .cyber-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #ec4899, #06b6d4, transparent);
+            border-radius: 9999px;
+        }
+
+        /* Glowing HUD Border */
+        .hud-border {
+            position: relative;
+        }
+        .hud-border::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            right: 10px;
+            width: 30px;
+            height: 4px;
+            background: #06b6d4;
+            box-shadow: 0 0 10px #06b6d4;
+        }
+
+        /* Scanline Overlay */
+        .scanlines {
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0, 0, 0, 0.25) 50%,
+                rgba(0, 0, 0, 0.25)
+            );
+            background-size: 100% 4px;
+        }
+
+        /* Custom Hologram Pulse */
+        @keyframes holoPulse {
+            0%, 100% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.02); filter: drop-shadow(0 0 15px #ec4899); }
+        }
+        .animate-holo {
+            animation: holoPulse 4s ease-in-out infinite;
+        }
+
+        /* Cyber grid scroll */
+        @keyframes gridMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 50px 50px; }
+        }
+        .cyber-grid-bg {
+            background-image: 
+                linear-gradient(rgba(168, 85, 247, 0.12) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(168, 85, 247, 0.12) 1px, transparent 1px);
+            background-size: 40px 40px;
+            animation: gridMove 20s linear infinite;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #06030c; }
+        ::-webkit-scrollbar-thumb { background: #a855f7; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #ec4899; }
+    </style>
+</head>
+<body class="cyber-grid-bg min-h-screen text-slate-100 relative">
+
+    <!-- Background Animated Cyber Canvas -->
+    <canvas id="cyberCanvas" class="fixed inset-0 pointer-events-none z-0 opacity-40"></canvas>
+    
+    <!-- CRT Scanlines effect overlay -->
+    <div class="fixed inset-0 pointer-events-none z-10 scanlines opacity-30"></div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 ease-out bg-slate-900/90 text-cyberCyan px-5 py-3 rounded-xl border border-cyberCyan shadow-neonCyan flex items-center gap-3 backdrop-blur-md">
+        <i class="fa-solid fa-bolt text-cyberYellow text-lg animate-bounce"></i>
+        <span id="toastMsg" class="tech-font font-semibold text-sm">SYSTEM MESSAGE</span>
+    </div>
+
+    <!-- TOP NAVIGATION HUD -->
+    <header class="sticky top-0 z-40 bg-cyberDarker/80 backdrop-blur-xl border-b border-purple-900/50 px-4 py-3">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <!-- Brand Logo -->
+            <a href="#" class="tech-font text-lg md:text-xl font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyberPink via-purple-400 to-cyberCyan flex items-center gap-2.5">
+                <span class="p-1.5 rounded-lg bg-purple-900/50 border border-cyberPink text-cyberPink shadow-neonPink text-sm">
+                    <i class="fa-solid fa-cat"></i>
+                </span>
+                MAY.PORTFOLIO <span class="text-xs px-2 py-0.5 rounded bg-pink-950/80 text-cyberPink border border-pink-700/50">v2.0</span>
+            </a>
+
+            <!-- HUD Quick Navigation -->
+            <nav class="hidden md:flex items-center gap-6 tech-font text-xs font-semibold tracking-wider">
+                <a href="#about" class="text-slate-300 hover:text-cyberPink transition duration-200 flex items-center gap-1.5">
+                    <span class="text-cyberPink">//</span> ABOUT
+                </a>
+                <a href="#education" class="text-slate-300 hover:text-cyberCyan transition duration-200 flex items-center gap-1.5">
+                    <span class="text-cyberCyan">//</span> EDUCATION
+                </a>
+                <a href="#skills" class="text-slate-300 hover:text-cyberYellow transition duration-200 flex items-center gap-1.5">
+                    <span class="text-cyberYellow">//</span> INTERESTS
+                </a>
+                <a href="#contact" class="text-slate-300 hover:text-cyberGreen transition duration-200 flex items-center gap-1.5">
+                    <span class="text-cyberGreen">//</span> CONTACT
+                </a>
+            </nav>
+
+            <!-- Status Indicator & SFX Control -->
+            <div class="flex items-center gap-3">
+                <button onclick="toggleAudio()" id="sfxBtn" class="px-3 py-1.5 rounded-lg bg-purple-950/70 hover:bg-purple-900/80 text-cyberPink text-xs border border-purple-700/50 transition flex items-center gap-2 shadow-sm">
+                    <i class="fa-solid fa-volume-high text-cyberCyan"></i>
+                    <span class="hidden sm:inline tech-font">SFX: ON</span>
+                </button>
+
+                <button onclick="openGithubModal()" class="px-3 py-1.5 rounded-lg bg-gradient-to-r from-cyberPink to-purple-600 text-white font-bold text-xs tech-font shadow-neonPink hover:scale-105 transition active:scale-95 flex items-center gap-1.5">
+                    <i class="fa-brands fa-github text-sm"></i>
+                    <span>DEPLOY INFO</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 py-8 relative z-20 space-y-12">
+
+        <!-- Futuristic Banner Header -->
+        <section class="text-center relative pt-4 space-y-3">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-950/80 border border-cyberPink/50 text-cyberPink text-xs tech-font tracking-widest uppercase shadow-neonPink animate-pulse">
+                <span class="w-2 h-2 rounded-full bg-cyberPink animate-ping"></span>
+                SYSTEM ACTIVE // PUBLIC HEALTH CANDIDATE
+            </div>
+            
+            <h1 class="tech-font text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-white drop-shadow-[0_0_25px_rgba(168,85,247,0.7)]">
+                ACADEMIC <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyberPink via-purple-300 to-cyberCyan">PORTFOLIO</span>
+            </h1>
+            <p class="text-purple-300 text-sm sm:text-base font-light mali-font max-w-xl mx-auto">
+                ✨ ยินดีต้อนรับสู่เว็บไซต์ประวัติส่วนตัว "เมย์" ณิชา กิริยาดี ✨
+            </p>
+        </section>
+
+        <!-- MAIN PROFILE HERO SECTION -->
+        <section id="about" class="cyber-card rounded-3xl p-6 md:p-10 relative overflow-hidden">
+            <!-- Decorative Cyber HUD Lines -->
+            <div class="absolute top-3 left-3 text-[10px] tech-font text-cyberCyan/60 tracking-widest">
+                SYS_ID: MAY_2006 // LOC: KHON KAEN
+            </div>
+            <div class="absolute top-3 right-3 text-xs text-cyberPink">
+                <i class="fa-solid fa-microchip animate-spin-slow"></i>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center mt-4">
+                
+                <!-- PROFILE IMAGE WITH HI-TECH TARGET RETICLE -->
+                <div class="md:col-span-5 flex flex-col items-center">
+                    <div class="relative group">
+                        <!-- Holographic Outer Ring -->
+                        <div class="absolute -inset-3 rounded-full bg-gradient-to-tr from-cyberPink via-cyberPurple to-cyberCyan opacity-75 blur-md group-hover:opacity-100 transition duration-500 animate-holo"></div>
+
+                        <!-- Sci-Fi Target Ring Overlay -->
+                        <div class="absolute -inset-5 rounded-full border border-dashed border-cyberCyan/50 animate-spin-slow pointer-events-none"></div>
+
+                        <!-- Profile Avatar Container -->
+                        <div class="relative w-48 h-48 sm:w-56 sm:h-56 rounded-full overflow-hidden border-4 border-slate-900 shadow-2xl bg-purple-950">
+                            <!-- Image Fallback handling -->
+                            <img src="image_6.png" alt="ณิชา กิริยาดี (เมย์)" 
+                                 class="w-full h-full object-cover object-top group-hover:scale-110 transition duration-700 ease-out"
+                                 onerror="this.onerror=null; this.src='image.png';">
+                        </div>
+
+                        <!-- Paw Badge Icon -->
+                        <div class="absolute bottom-2 right-2 bg-slate-900 text-cyberPink p-3 rounded-full shadow-neonPink border-2 border-cyberPink">
+                            <i class="fa-solid fa-cat text-xl"></i>
+                        </div>
+                    </div>
+
+                    <!-- Motto Hologram Box -->
+                    <div class="mt-8 w-full cyber-card rounded-2xl p-4 text-center border border-cyberPink/40 shadow-neonPink relative">
+                        <div class="text-xs text-cyberPink font-bold uppercase tracking-widest tech-font mb-1 flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-quote-left text-cyberCyan"></i> MOTTO // คติประจำใจ
+                        </div>
+                        <p class="mali-font text-lg md:text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-300 via-purple-200 to-cyan-300">
+                            "วันนี้ไม่ใช่เรา วันหน้าต้องใช่"
+                        </p>
+                    </div>
+                </div>
+
+                <!-- PERSONAL DETAILS CARD -->
+                <div class="md:col-span-7 space-y-6">
+                    <div class="border-b border-purple-800/40 pb-4">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyberPink/20 text-cyberPink border border-cyberPink/40 text-xs font-semibold tech-font mb-2">
+                            <i class="fa-solid fa-id-card"></i> STUDENT PROFILE
+                        </div>
+                        <h2 class="mali-font text-3xl md:text-4xl font-extrabold text-white tracking-wide">
+                            ณิชา กิริยาดี
+                        </h2>
+                        <p class="text-lg text-cyberCyan font-medium mali-font mt-1">
+                            ชื่อเล่น: <span class="text-cyberPink font-bold text-xl">เมย์</span> 🌸
+                        </p>
+                    </div>
+
+                    <!-- Stats Grid -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-purple-950/60 p-4 rounded-2xl border border-purple-800/50 hover:border-cyberPink transition">
+                            <span class="text-xs text-purple-300 block tech-font">🎂 BIRTHDATE</span>
+                            <span class="mali-font text-base font-bold text-white">23 พฤษภาคม 2549</span>
+                        </div>
+                        <div class="bg-purple-950/60 p-4 rounded-2xl border border-purple-800/50 hover:border-cyberCyan transition">
+                            <span class="text-xs text-cyberCyan block tech-font">🎈 AGE</span>
+                            <span class="mali-font text-base font-bold text-cyberCyan">20 ปี</span>
+                        </div>
+                    </div>
+
+                    <!-- Current Institution HUD Box -->
+                    <div class="p-5 rounded-2xl bg-gradient-to-r from-purple-950/90 via-slate-900 to-purple-950/90 border border-cyberCyan/40 shadow-neonCyan space-y-2">
+                        <div class="flex items-center justify-between text-xs tech-font text-cyberCyan">
+                            <span><i class="fa-solid fa-graduation-cap"></i> CURRENT INSTITUTION</span>
+                            <span class="px-2 py-0.5 rounded bg-cyan-950 text-cyberCyan text-[10px] border border-cyan-800">YEAR 1</span>
+                        </div>
+                        <div class="mali-font font-bold text-white text-base md:text-lg">
+                            วิทยาลัยการสาธารณสุขสิรินธร จังหวัดขอนแก่น
+                        </div>
+                        <div class="text-sm text-purple-300 font-medium">
+                            สาขา<span class="text-cyberPink font-bold">สาธารณสุขชุมชน</span> (ชั้นปีที่ 1)
+                        </div>
+                    </div>
+
+                    <!-- Interactive Synthesizer SFX Button -->
+                    <div class="flex items-center gap-4 pt-2">
+                        <button onclick="playCyberMeow()" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyberPink to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-bold text-sm tech-font shadow-neonPink transition transform active:scale-95 flex items-center gap-2">
+                            <i class="fa-solid fa-volume-high text-cyberYellow"></i>
+                            <span>TRIGGER CYBER-MEOW SFX 🐾</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- EDUCATION TIMELINE SECTION -->
+        <section id="education" class="space-y-6">
+            <div class="flex items-center gap-3 border-b border-purple-800/40 pb-3">
+                <div class="w-10 h-10 rounded-xl bg-cyberPink/20 text-cyberPink flex items-center justify-center font-bold text-xl border border-cyberPink/50 shadow-neonPink">
+                    🎓
+                </div>
+                <div>
+                    <h3 class="tech-font text-2xl font-bold text-white">EDUCATION // ประวัติการศึกษา</h3>
+                    <p class="text-xs text-purple-400">Academic journey in Science, Technology & Health Sciences</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- High School Card -->
+                <div class="cyber-card p-6 rounded-3xl space-y-3 hover:border-cyberPink transition duration-300 group">
+                    <div class="flex justify-between items-start">
+                        <span class="px-3 py-1 rounded-full bg-purple-900/60 text-purple-300 border border-purple-700/50 text-xs tech-font font-semibold">
+                            NODE 01 // HIGHSCHOOL
+                        </span>
+                        <i class="fa-solid fa-school text-cyberPink text-xl group-hover:scale-125 transition"></i>
+                    </div>
+                    
+                    <h4 class="mali-font text-xl font-bold text-white">โรงเรียนรัตนบุรี</h4>
+                    <div class="inline-block px-3 py-0.5 rounded bg-pink-950/80 text-cyberPink text-xs font-bold border border-pink-800">
+                        แผนการเรียน SMTE
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed font-light">
+                        สำเร็จการศึกษาชั้นมัธยมศึกษาปีที่ 6 จากห้องเรียนพิเศษวิทยาศาสตร์ คณิตศาสตร์ เทคโนโลยี และสิ่งแวดล้อม (SMTE)
+                    </p>
+                </div>
+
+                <!-- Current College Card -->
+                <div class="cyber-card p-6 rounded-3xl space-y-3 border-cyberCyan/60 hover:border-cyberCyan transition duration-300 group shadow-neonCyan">
+                    <div class="flex justify-between items-start">
+                        <span class="px-3 py-1 rounded-full bg-cyan-950 text-cyberCyan border border-cyan-700 text-xs tech-font font-semibold">
+                            NODE 02 // PRESENT
+                        </span>
+                        <i class="fa-solid fa-hospital-user text-cyberCyan text-xl group-hover:scale-125 transition"></i>
+                    </div>
+                    
+                    <h4 class="mali-font text-xl font-bold text-white">วิทยาลัยการสาธารณสุขสิรินธร จังหวัดขอนแก่น</h4>
+                    <div class="inline-block px-3 py-0.5 rounded bg-cyan-950/80 text-cyberCyan text-xs font-bold border border-cyan-800">
+                        สาขาสาธารณสุขชุมชน (ชั้นปีที่ 1)
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed font-light">
+                        มุ่งมั่นศึกษาวิชาชีพการส่งเสริมสุขภาพ การป้องกันโรค และการพัฒนาสุขภาวะทางสาธารณสุขเพื่อชุมชนอย่างมีประสิทธิภาพ
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- HOBBIES & DREAM CAREERS MATRIX -->
+        <section id="skills" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            
+            <!-- HOBBIES HUD CARD -->
+            <div class="cyber-card p-6 rounded-3xl space-y-5">
+                <div class="flex items-center gap-3 border-b border-purple-800/40 pb-3">
+                    <div class="p-2.5 bg-cyberPink/20 rounded-xl text-cyberPink text-lg border border-cyberPink/40">
+                        <i class="fa-solid fa-heart"></i>
+                    </div>
+                    <div>
+                        <h3 class="tech-font text-xl font-bold text-white">ACTIVITIES // กิจกรรมที่ชอบ</h3>
+                        <p class="text-xs text-purple-400">Personal Hobbies & Interests</p>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <!-- Activity 1 -->
+                    <div class="flex items-center gap-4 p-3.5 rounded-2xl bg-purple-950/40 border border-purple-800/40 hover:border-cyberPink transition">
+                        <span class="text-3xl">🐱</span>
+                        <div>
+                            <span class="mali-font font-bold text-white text-base block">เล่นกับแมว</span>
+                            <span class="text-xs text-slate-400">ผ่อนคลาย เพิ่มพลังความสดใส เติมไฟด้วยน้องแมว</span>
+                        </div>
+                    </div>
+
+                    <!-- Activity 2 -->
+                    <div class="flex items-center gap-4 p-3.5 rounded-2xl bg-purple-950/40 border border-purple-800/40 hover:border-cyberCyan transition">
+                        <span class="text-3xl">🎬🎧</span>
+                        <div>
+                            <span class="mali-font font-bold text-white text-base block">ดูหนัง ฟังเพลง</span>
+                            <span class="text-xs text-slate-400">เปิดรับแรงบันดาลใจใหม่ๆ และความเพลิดเพลิน</span>
+                        </div>
+                    </div>
+
+                    <!-- Activity 3 -->
+                    <div class="flex items-center gap-4 p-3.5 rounded-2xl bg-purple-950/40 border border-purple-800/40 hover:border-cyberYellow transition">
+                        <span class="text-3xl">🧩🎮</span>
+                        <div>
+                            <span class="mali-font font-bold text-white text-base block">เล่นเกมส์ ต่อจิ๊กซอว์</span>
+                            <span class="text-xs text-slate-400">ฝึกตรรกะ การวางแผน และการแก้ปัญหา</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DREAM CAREERS HUD CARD -->
+            <div class="cyber-card p-6 rounded-3xl space-y-5">
+                <div class="flex items-center gap-3 border-b border-purple-800/40 pb-3">
+                    <div class="p-2.5 bg-cyberCyan/20 rounded-xl text-cyberCyan text-lg border border-cyberCyan/40">
+                        <i class="fa-solid fa-rocket"></i>
+                    </div>
+                    <div>
+                        <h3 class="tech-font text-xl font-bold text-white">DREAM CAREERS // อาชีพในฝัน</h3>
+                        <p class="text-xs text-purple-400">Future Aspirations & Goals</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- Career 1 -->
+                    <div class="p-4 rounded-2xl bg-gradient-to-r from-purple-950 via-slate-900 to-purple-900 border border-purple-700/60 flex items-center justify-between hover:border-cyberPink transition shadow-sm">
+                        <div class="flex items-center gap-3.5">
+                            <span class="text-3xl">🩺</span>
+                            <div>
+                                <h4 class="mali-font font-bold text-white text-lg">หมอ / แพทย์</h4>
+                                <p class="text-xs text-purple-300">ช่วยเหลือ และรักษาผู้ป่วยในชุมชน</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-stethoscope text-cyberPink text-2xl"></i>
+                    </div>
+
+                    <!-- Career 2 -->
+                    <div class="p-4 rounded-2xl bg-gradient-to-r from-pink-950 via-slate-900 to-purple-950 border border-pink-800/60 flex items-center justify-between hover:border-cyberCyan transition shadow-sm">
+                        <div class="flex items-center gap-3.5">
+                            <span class="text-3xl">☕🐾</span>
+                            <div>
+                                <h4 class="mali-font font-bold text-white text-lg">เจ้าของคาเฟ่แมว</h4>
+                                <p class="text-xs text-pink-300">สร้างพื้นที่อบอุ่น เติมความสุขให้ทาสแมว</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-store text-cyberCyan text-2xl"></i>
+                    </div>
+
+                    <!-- Tag badges -->
+                    <div class="pt-2 flex flex-wrap gap-2 text-xs tech-font">
+                        <span class="px-3 py-1 rounded-full bg-purple-900/60 text-purple-200 border border-purple-700">#PUBLIC_HEALTH</span>
+                        <span class="px-3 py-1 rounded-full bg-pink-900/60 text-pink-200 border border-pink-700">#SMTE_SCIENCE</span>
+                        <span class="px-3 py-1 rounded-full bg-cyan-900/60 text-cyan-200 border border-cyan-700">#CAT_LOVER</span>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- INTERACTIVE CYBER-QUIZ TERMINAL -->
+        <section class="cyber-card p-6 md:p-8 rounded-3xl space-y-5 border-cyberCyan/50">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-purple-800/40 pb-4">
+                <div class="flex items-center gap-3">
+                    <span class="p-2.5 bg-cyberCyan/20 text-cyberCyan rounded-xl border border-cyberCyan/40 text-xl">
+                        <i class="fa-solid fa-gamepad"></i>
+                    </span>
+                    <div>
+                        <h3 class="tech-font text-xl font-bold text-white">HEALTH & BIO TRIVIA // มินิเกมตอบคำถาม</h3>
+                        <p class="text-xs text-purple-400">ทดสอบความรู้สาธารณสุขชุมชนเบื้องต้น</p>
+                    </div>
+                </div>
+                <div id="quizScore" class="tech-font text-xs font-bold text-cyberYellow px-3 py-1 bg-purple-950 rounded-full border border-purple-700">
+                    SCORE: <span id="scoreVal">0</span> PTS
+                </div>
+            </div>
+
+            <!-- Quiz Display Window -->
+            <div id="quizContainer" class="bg-slate-950/80 p-5 rounded-2xl border border-purple-800/60 space-y-4">
+                <div id="quizQuestion" class="mali-font text-base sm:text-lg font-bold text-cyberCyan">
+                    LOADING QUESTION...
+                </div>
+
+                <div id="quizOptions" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <!-- Dynamic Buttons -->
+                </div>
+
+                <div id="quizFeedback" class="hidden p-3 rounded-xl text-xs sm:text-sm font-semibold tech-font"></div>
+            </div>
+        </section>
+
+        <!-- CONTACT TERMINAL SECTION -->
+        <section id="contact" class="cyber-card p-6 md:p-8 rounded-3xl space-y-6 text-center border-cyberPink/50 shadow-neonPink">
+            <div class="inline-block p-3 bg-cyberPink/20 rounded-2xl text-cyberPink text-3xl border border-cyberPink/50 animate-bounce">
+                💌
+            </div>
+            <div>
+                <h3 class="tech-font text-2xl md:text-3xl font-extrabold text-white">CONTACT TERMINAL // ช่องทางการติดต่อ</h3>
+                <p class="text-xs md:text-sm text-purple-300 mali-font mt-1">สามารถติดตาม หรือ ติดต่อสอบถามได้ทางโซเชียลมีเดียค่ะ</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl mx-auto">
+                <!-- Facebook Card -->
+                <div class="p-4 rounded-2xl bg-slate-900/90 border border-blue-600/50 flex items-center justify-between hover:border-blue-400 transition group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-11 h-11 rounded-xl bg-blue-600 text-white flex items-center justify-center text-xl shadow-lg">
+                            <i class="fa-brands fa-facebook-f"></i>
+                        </div>
+                        <div class="text-left">
+                            <span class="text-[10px] text-blue-400 font-bold tech-font block">FACEBOOK</span>
+                            <span class="mali-font font-bold text-white text-base">May nicha</span>
+                        </div>
+                    </div>
+                    <button onclick="copyText('May nicha', 'Facebook')" class="px-3 py-1.5 bg-blue-950 text-blue-300 hover:bg-blue-900 text-xs font-semibold rounded-lg border border-blue-700 transition tech-font">
+                        COPY
+                    </button>
+                </div>
+
+                <!-- Instagram Card -->
+                <div class="p-4 rounded-2xl bg-slate-900/90 border border-pink-600/50 flex items-center justify-between hover:border-pink-400 transition group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 text-white flex items-center justify-center text-xl shadow-lg">
+                            <i class="fa-brands fa-instagram"></i>
+                        </div>
+                        <div class="text-left">
+                            <span class="text-[10px] text-pink-400 font-bold tech-font block">INSTAGRAM</span>
+                            <span class="mali-font font-bold text-white text-base">Nicha._mnk</span>
+                        </div>
+                    </div>
+                    <button onclick="copyText('Nicha._mnk', 'Instagram')" class="px-3 py-1.5 bg-pink-950 text-pink-300 hover:bg-pink-900 text-xs font-semibold rounded-lg border border-pink-700 transition tech-font">
+                        COPY
+                    </button>
+                </div>
+            </div>
+
+            <div class="pt-4 border-t border-purple-900/60 text-xs text-purple-400 mali-font">
+                สวัสดีจ้า 👋🏻 | Portfolio created for Nicha Kiriyadee (May)
+            </div>
+        </section>
+
+    </main>
+
+    <!-- GITHUB PAGES DEPLOYMENT MODAL -->
+    <div id="githubModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden">
+        <div class="cyber-card w-full max-w-xl p-6 rounded-3xl border-cyberCyan shadow-neonCyan space-y-5 relative">
+            <button onclick="closeGithubModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="flex items-center gap-3 border-b border-purple-800 pb-3">
+                <i class="fa-brands fa-github text-cyberCyan text-2xl"></i>
+                <div>
+                    <h3 class="tech-font text-lg font-bold text-white">GITHUB PAGES DEPLOYMENT GUIDE</h3>
+                    <p class="text-xs text-purple-300">วิธีอัปโหลดไฟล์ขึ้น GitHub Pages ให้คนอื่นเข้าชมได้ง่ายๆ</p>
+                </div>
+            </div>
+
+            <div class="space-y-3 text-xs text-slate-300 leading-relaxed font-light">
+                <div class="p-3 bg-slate-950 rounded-xl border border-purple-800 space-y-1">
+                    <div class="font-bold text-cyberPink tech-font">STEP 1: CREATE REPOSITORY</div>
+                    <p>สร้าง Repository ใหม่บน GitHub โดยตั้งชื่ออะไรก็ได้ (เช่น <code class="text-cyberCyan">my-portfolio</code>)</p>
+                </div>
+
+                <div class="p-3 bg-slate-950 rounded-xl border border-purple-800 space-y-1">
+                    <div class="font-bold text-cyberCyan tech-font">STEP 2: UPLOAD THIS FILE</div>
+                    <p>อัปโหลดไฟล์นี้ขึ้น Repository และตั้งชื่อไฟล์ว่า <code class="text-cyberYellow font-bold">index.html</code></p>
+                </div>
+
+                <div class="p-3 bg-slate-950 rounded-xl border border-purple-800 space-y-1">
+                    <div class="font-bold text-cyberYellow tech-font">STEP 3: ACTIVATE GITHUB PAGES</div>
+                    <p>ไปที่ **Settings** > **Pages** > เลือกลูกศร **Branch: main** แล้วกด **Save** เว็บไซต์จะเปิดใช้งานทันที!</p>
+                </div>
+            </div>
+
+            <div class="text-right pt-2">
+                <button onclick="closeGithubModal()" class="px-4 py-2 bg-purple-900 hover:bg-purple-800 text-white font-bold text-xs rounded-xl tech-font">
+                    GOT IT! CLOSE
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="text-center py-8 text-xs text-purple-400/80 tech-font relative z-20">
+        <p>© 2026 NICHA KIRIYADEE (MAY) • SIRINDHORN COLLEGE OF PUBLIC HEALTH KHON KAEN</p>
+    </footer>
+
+    <!-- JAVASCRIPT ENGINE -->
+    <script>
+        const canvas = document.getElementById('cyberCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class CyberParticle {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 1;
+                this.speedY = -(Math.random() * 0.8 + 0.2);
+                this.opacity = Math.random() * 0.5 + 0.2;
+                this.color = Math.random() > 0.5 ? '#ec4899' : '#06b6d4';
+            }
+            update() {
+                this.y += this.speedY;
+                if (this.y < 0) {
+                    this.y = canvas.height;
+                    this.x = Math.random() * canvas.width;
+                }
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = this.opacity;
+                ctx.fill();
+                ctx.globalAlpha = 1.0;
+            }
+        }
+
+        for (let i = 0; i < 45; i++) {
+            particles.push(new CyberParticle());
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        let sfxEnabled = true;
+
+        function toggleAudio() {
+            sfxEnabled = !sfxEnabled;
+            const btn = document.getElementById('sfxBtn');
+            btn.innerHTML = sfxEnabled ? 
+                '<i class="fa-solid fa-volume-high text-cyberCyan"></i><span class="hidden sm:inline tech-font">SFX: ON</span>' :
+                '<i class="fa-solid fa-volume-xmark text-slate-500"></i><span class="hidden sm:inline tech-font">SFX: OFF</span>';
+            showToast(sfxEnabled ? "SFX ACTIVATED 🔊" : "SFX MUTED 🔇");
+        }
+
+        function playCyberMeow() {
+            if (!sfxEnabled) return;
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctxAudio = new AudioCtx();
+
+                const osc = ctxAudio.createOscillator();
+                const gain = ctxAudio.createGain();
+
+                const now = ctxAudio.currentTime;
+                osc.type = 'sine';
+                
+                // Cyber Pitch Sweep for cute meow
+                osc.frequency.setValueAtTime(400, now);
+                osc.frequency.exponentialRampToValueAtTime(850, now + 0.15);
+                osc.frequency.exponentialRampToValueAtTime(300, now + 0.4);
+
+                gain.gain.setValueAtTime(0.01, now);
+                gain.gain.linearRampToValueAtTime(0.25, now + 0.08);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+
+                osc.connect(gain);
+                gain.connect(ctxAudio.destination);
+
+                osc.start(now);
+                osc.stop(now + 0.45);
+
+                showToast("🐱 MEOW! CYBER SOUND GENERATED!");
+            } catch(e) {
+                showToast("🐱 MEOW! (AUDIO SYNTHESIZER ACTIVE)");
+            }
+        }
+
+        function copyText(text, platform) {
+            const temp = document.createElement('input');
+            temp.value = text;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand('copy');
+            document.body.removeChild(temp);
+
+            showToast(`COPIED ${platform.toUpperCase()}: ${text} ✨`);
+            playCyberMeow();
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            toastMsg.innerText = msg;
+
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-24', 'opacity-0');
+            }, 3000);
+        }
+
+        let score = 0;
+        let currentQ = 0;
+        const quizData = [
+            {
+                q: "คำถาม: บทบาทหลักของสาขาวิชา 'สาธารณสุขชุมชน' คือข้อใด?",
+                options: ["A. การส่งเสริมสุขภาพและการป้องกันโรคในชุมชน", "B. การซ่อมแซมอุปกรณ์คอมพิวเตอร์"],
+                correct: 0,
+                info: "ถูกต้องค่ะ! สาธารณสุขชุมชนเน้นการส่งเสริมสุขภาพ และป้องกันโรคให้แก่ประชาชน ✨"
+            },
+            {
+                q: "คำถาม: หลักการสร้างเสริมสุขภาวะในระดับชุมชนเน้นข้อใดเป็นสำคัญ?",
+                options: ["A. การมีส่วนร่วมของคนในชุมชน", "B. การรอให้ป่วยก่อนค่อยรักษา"],
+                correct: 0,
+                info: "ถูกต้องค่ะ! การมีส่วนร่วมของชุมชนเป็นหัวใจสำคัญของการพัฒนาสุขภาวะที่ยั่งยืน 🏥"
+            }
+        ];
+
+        function loadQuiz() {
+            const current = quizData[currentQ];
+            document.getElementById('quizQuestion').innerText = current.q;
+            const optionsDiv = document.getElementById('quizOptions');
+            optionsDiv.innerHTML = '';
+
+            current.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "p-3.5 text-left rounded-xl border border-purple-800 bg-purple-950/40 hover:bg-purple-900/60 hover:border-cyberCyan transition text-sm text-white mali-font font-medium";
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(idx);
+                optionsDiv.appendChild(btn);
+            });
+
+            document.getElementById('quizFeedback').classList.add('hidden');
+        }
+
+        function checkAnswer(selectedIdx) {
+            const current = quizData[currentQ];
+            const feedback = document.getElementById('quizFeedback');
+            feedback.classList.remove('hidden', 'bg-emerald-950', 'border-emerald-500', 'text-emerald-300', 'bg-rose-950', 'border-rose-500', 'text-rose-300');
+
+            if (selectedIdx === current.correct) {
+                score += 10;
+                document.getElementById('scoreVal').innerText = score;
+                feedback.classList.add('bg-emerald-950', 'border', 'border-emerald-500', 'text-emerald-300');
+                feedback.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${current.info}`;
+                playCyberMeow();
+            } else {
+                feedback.classList.add('bg-rose-950', 'border', 'border-rose-500', 'text-rose-300');
+                feedback.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> ยังไม่ถูกต้องนะคะ ลองใหม่อีกครั้งค่ะ! 🐱`;
+            }
+
+            setTimeout(() => {
+                currentQ = (currentQ + 1) % quizData.length;
+                loadQuiz();
+            }, 3000);
+        }
+
+        function openGithubModal() {
+            document.getElementById('githubModal').classList.remove('hidden');
+        }
+        function closeGithubModal() {
+            document.getElementById('githubModal').classList.add('hidden');
+        }
+
+        window.onload = function() {
+            loadQuiz();
+        };
+    </script>
+</body>
+</html>
